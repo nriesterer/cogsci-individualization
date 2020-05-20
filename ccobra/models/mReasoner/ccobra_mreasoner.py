@@ -118,6 +118,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
         """
 
         if self.mode != 'pretrain':
+            print('No pretrain...')
             return
 
         if self.fit_its == 0:
@@ -134,6 +135,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
                 train_y.append(enc_resp)
 
         # Perform the fitting
+        print('Pretrain...')
         self.fit_mreasoner_grid_parallel(train_x, train_y, self.fit_its, self.num_threads)
 
     def fit_mreasoner_grid_parallel(self, train_x, train_y, fit_its, num_threads):
@@ -150,6 +152,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
                 for p_lambda  in np.linspace(*thread_mreasoner.param_bounds[1], fit_its):
                     for p_omega in np.linspace(*thread_mreasoner.param_bounds[2], fit_its):
                         for p_sigma in np.linspace(*thread_mreasoner.param_bounds[3], fit_its):
+                            print("Params: ", p_epsilon, p_lambda, p_omega, p_sigma)
                             params = [p_epsilon, p_lambda, p_omega, p_sigma]
 
                             preds = {}
@@ -203,9 +206,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
         self.mreasoner.set_param_vec(used_params)
 
     def person_train(self, dataset, **kwargs):
-        if self.mode != 'persontrain':
-            return
-
         train_x = []
         train_y = []
         for subj_data in [dataset]:
@@ -218,7 +218,12 @@ class CCobraMReasoner(ccobra.CCobraModel):
 
         self.dude_responses = dict(zip(train_x, train_y))
 
+        if self.mode != 'persontrain':
+            print('No person train...')
+            return
+
         # Perform the fitting
+        print('Persontrain...')
         self.fit_mreasoner_grid_parallel(train_x, train_y, self.fit_its, self.num_threads)
 
     def predict(self, item, **kwargs):
