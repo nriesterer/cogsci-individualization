@@ -91,6 +91,9 @@ class PHMModel(ccobra.CCobraModel):
         self.adapt_grid()
 
     def adapt_grid(self):
+        print('adapt_grid...')
+        sys.stdout.flush()
+
         best_score = 0
         best_p_ent = 0
         best_dir_bias = 0

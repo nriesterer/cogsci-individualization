@@ -197,7 +197,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
         print('training done.')
         sys.stdout.flush()
 
-    def person_train(self, dataset, **kwargs):
+    def pre_train_person(self, dataset, **kwargs):
         train_x = []
         train_y = []
         for subj_data in [dataset]:
