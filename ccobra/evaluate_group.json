@@ -1,0 +1,16 @@
+{
+    "type": "coverage",
+    "data.test": "data/Ragni2016.csv",
+    "data.pre_train": "data/Ragni2016.csv",
+    "corresponding_data": false,
+    "domains": ["syllogistic"],
+    "response_types": ["single-choice"],
+    "models": [
+        {"filename": "models/mReasoner/ccobra_mreasoner.py", "override_name": "mReasoner-Group","args":{"fit_its": 11, "n_samples": 5}},
+        {"filename": "models/phm/ccobra_phm.py", "override_name": "PHM-Group"},
+        "models/mfa"
+    ],
+    "domain_encoders": {
+        "syllogistic": "%ccobra%/syllogistic/encoder_syl.py"
+    }
+}

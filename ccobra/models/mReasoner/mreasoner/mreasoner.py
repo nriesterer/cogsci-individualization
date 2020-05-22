@@ -162,8 +162,11 @@ class MReasoner():
 
         # Compile mreasoner if not done before
         if not os.path.exists(fasl_path):
+            print('Compiling...')
             mreasoner_file = mreasoner_file.replace('\\', '/')
             self._send('(compile-file "{}")'.format(mreasoner_file))
+        else:
+            print('Dont compile')
 
         fasl_path = fasl_path.replace('\\', '/')
         self._send('(load "{}")'.format(fasl_path))

@@ -21,8 +21,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
 
     """
 
-    def __init__(self, name='mReasoner', fit_its=0, n_samples=2, method='grid',
-                 num_threads=4, mode='pretrain'):
+    def __init__(self, name='mReasoner', fit_its=0, n_samples=2, method='grid', num_threads=4):
         """ Initializes the CCOBRA model by launching the interactive LISP subprocess.
 
         """
@@ -40,7 +39,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
         self.num_threads = num_threads
         self.fit_its = fit_its
         self.n_samples = n_samples
-        self.mode = mode
 
         # Adaption parameters
         self.adapt_x = []
@@ -49,10 +47,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
 
         self.cnt = 0
         self.adapt_cnt = 0
-
-        self.hits = 0
-        self.dude_responses = None
-        self.best_params = None
 
         self.start_time = None
 
@@ -77,7 +71,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
 
         new = CCobraMReasoner(
             self.name, self.fit_its, n_samples=self.n_samples, method=self.method,
-            num_threads=self.num_threads, mode=self.mode)
+            num_threads=self.num_threads)
         new.best_params = self.best_params
 
         # Deep copy properties of mreasoner instance
@@ -92,11 +86,10 @@ class CCobraMReasoner(ccobra.CCobraModel):
         """
 
         # Parameterization output
-        print('Fit ({:.2f}s, {} its) id={} score={} params={}'.format(
+        print('Fit ({:.2f}s, {} its) id={} params={}'.format(
             time.time() - self.start_time,
             self.fit_its,
             subj_id,
-            self.hits / 64,
             str(list(self.mreasoner.params.items())).replace(' ', ''),
         ))
         sys.stdout.flush()
@@ -116,9 +109,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
             Training data.
 
         """
-
-        if self.mode != 'pretrain':
-            return
 
         if self.fit_its == 0:
             return
@@ -202,10 +192,9 @@ class CCobraMReasoner(ccobra.CCobraModel):
         used_params = best_params[np.random.randint(0, len(best_params))]
         self.mreasoner.set_param_vec(used_params)
 
-    def person_train(self, dataset, **kwargs):
-        if self.mode != 'persontrain':
-            return
+        print('training done.')
 
+    def person_train(self, dataset, **kwargs):
         train_x = []
         train_y = []
         for subj_data in [dataset]:
@@ -215,8 +204,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
                 enc_resp = ccobra.syllogistic.encode_response(task_data['response'], item.task)
                 train_x.append(enc_task)
                 train_y.append(enc_resp)
-
-        self.dude_responses = dict(zip(train_x, train_y))
 
         # Perform the fitting
         self.fit_mreasoner_grid_parallel(train_x, train_y, self.fit_its, self.num_threads)
@@ -251,9 +238,5 @@ class CCobraMReasoner(ccobra.CCobraModel):
         max_preds = [pred for pred, pred_count in pred_counts.items() if pred_count == max_count]
 
         enc_resp = np.random.choice(max_preds)
-
-        # Compare with true response
-        if enc_resp == self.dude_responses[enc_task]:
-            self.hits += 1
 
         return ccobra.syllogistic.decode_response(enc_resp, item.task)

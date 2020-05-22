@@ -9,14 +9,13 @@ import pandas as pd
 import phm
 
 class PHMModel(ccobra.CCobraModel):
-    def __init__(self, name='PHM', khemlani_phrase=False, direction_bias_enabled=False, no_fit=False, mode=None):
+    def __init__(self, name='PHM', khemlani_phrase=False, direction_bias_enabled=False, no_fit=False):
         super(PHMModel, self).__init__(name, ['syllogistic'], ['single-choice'])
         self.phm = phm.PHM(khemlani_phrase=khemlani_phrase)
 
         # Member variables
         self.direction_bias_enabled = direction_bias_enabled
         self.no_fit = no_fit
-        self.mode = mode
 
         # Individualization parameters
         self.history = []
@@ -43,9 +42,6 @@ class PHMModel(ccobra.CCobraModel):
         sys.stdout.flush()
 
     def pre_train(self, data, **kwargs):
-        if self.mode != 'pretrain':
-            return
-
         print('pre-training...')
 
         for dataset in data:
@@ -57,9 +53,6 @@ class PHMModel(ccobra.CCobraModel):
         self.adapt_grid()
 
     def person_train(self, dataset, **kwargs):
-        if self.mode != 'persontrain':
-            return
-
         print('person training...')
 
         for task_data in dataset:
