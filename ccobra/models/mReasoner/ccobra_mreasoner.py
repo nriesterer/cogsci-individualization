@@ -72,7 +72,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
         new = CCobraMReasoner(
             self.name, self.fit_its, n_samples=self.n_samples, method=self.method,
             num_threads=self.num_threads)
-        new.best_params = self.best_params
 
         # Deep copy properties of mreasoner instance
         for param, value in self.mreasoner.params.items():
@@ -129,6 +128,8 @@ class CCobraMReasoner(ccobra.CCobraModel):
 
     def fit_mreasoner_grid_parallel(self, train_x, train_y, fit_its, num_threads):
         print('grid fitting...')
+        sys.stdout.flush()
+
         thread_results = []
         def work_fun(train_x, train_y, mreas_path, cloz_path, epsilon_values, fit_its, n_samples):
             # Create local mReasoner copy
@@ -194,6 +195,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
         self.mreasoner.set_param_vec(used_params)
 
         print('training done.')
+        sys.stdout.flush()
 
     def person_train(self, dataset, **kwargs):
         train_x = []
