@@ -141,7 +141,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
                 for p_lambda  in np.linspace(*thread_mreasoner.param_bounds[1], fit_its):
                     for p_omega in np.linspace(*thread_mreasoner.param_bounds[2], fit_its):
                         for p_sigma in np.linspace(*thread_mreasoner.param_bounds[3], fit_its):
-                            print("Params: ", p_epsilon, p_lambda, p_omega, p_sigma)
                             params = [p_epsilon, p_lambda, p_omega, p_sigma]
 
                             preds = {}
