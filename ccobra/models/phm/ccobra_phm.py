@@ -52,8 +52,8 @@ class PHMModel(ccobra.CCobraModel):
 
         self.adapt_grid()
 
-    def person_train(self, dataset, **kwargs):
-        print('person training...')
+    def pre_train_person(self, dataset, **kwargs):
+        print('pre_train_person...')
 
         for task_data in dataset:
             item = task_data['item']
