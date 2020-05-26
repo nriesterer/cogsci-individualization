@@ -1,9 +1,14 @@
+""" Produces figure 3, the distribution of PHM parameters.
+
+"""
+
 import sys
 import collections
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import seaborn as sns
 
 
@@ -29,9 +34,8 @@ with open(output_filename) as out_file:
                 modelname = 'PHM'
             continue
 
-        # Fit PHM output
+        # Normalize PHM output
         line = line.replace('p_entailm', '\'p_entailm\'').replace('direction', '\'direction\'').replace('max_confi', '\'max_confi\'')
-
         line = line.split()
 
         if line[0] == 'Fit':
@@ -53,28 +57,11 @@ with open(output_filename) as out_file:
                     'conf_E': content['params']['max_confi']['E'],
                     'conf_O': content['params']['max_confi']['O']
                 })
-        elif line[0].startswith('[('):
-            assert len(line) == 1 and modelname == 'mReasoner'
-            content = dict(eval(line[0]))
 
-            # Omit the duplicate parameterization
-            if content == mreas_params:
-                continue
-
-            # Read the alternative parameter line
-            mreasoner_data.append({
-                'id': mreasoner_data[-1]['id'],
-                'model': modelname,
-                'score': mreasoner_data[-1]['score'],
-                'epsilon': content['epsilon'],
-                'lambda': content['lambda'],
-                'omega': content['omega'],
-                'sigma': content['sigma']
-            })
-
+# Create dataframe of PHM parameterizations
 phm_df = pd.DataFrame(phm_data)
 
-# Compute
+# Compute numbers for the distribution overview
 dat = []
 cols = ['conf_A', 'conf_E', 'conf_I', 'conf_O', 'p_ent']
 for col in cols:
@@ -86,9 +73,11 @@ for col in cols:
     })
 df = pd.DataFrame(dat)
 
+# Prepare for plotting
 sns.set(style='whitegrid', palette='colorblind')
-
 plt.figure(figsize=(7, 3))
+
+# Plot the data
 sns.barplot(
     y='col', x='0_val', data=df, orient='h', color='C0',
     order=['conf_A', 'conf_I', 'conf_E', 'conf_O', 'p_ent'])
@@ -96,18 +85,17 @@ sns.barplot(
     y='col', x='1_val', data=df, orient='h', color='C1',
     order=['conf_A', 'conf_I', 'conf_E', 'conf_O', 'p_ent'])
 
+# Axes definition
 target_x = np.array([-139] + list(np.arange(-120, 121, 20)) + [139])
 source_x = target_x / 139
 plt.xticks(source_x, [str(np.abs(np.round(x, 2))) for x in target_x])
 plt.xlim(-1, 1)
-
-plt.ylabel('')
 plt.xlabel('Number of Reasoners')
 
 plt.yticks([0, 1, 2, 3, 4], cols, style='italic')
+plt.ylabel('')
 
-from matplotlib.lines import Line2D
-
+# Add a custom legend
 legend_handle = [
     Line2D([0], [0], color='w', marker='o', markerfacecolor='C0', ms=12, label=r'$param=0$'),
     Line2D([0], [0], color='w', marker='o', markerfacecolor='C1', ms=12, label=r'$param=1$'),
@@ -116,6 +104,7 @@ plt.legend(
     handles=legend_handle, bbox_to_anchor=(0, 1.1, 1, 0.05), loc='upper center',
     ncol=2, borderaxespad=0, frameon=False)
 
+# Save and display the plot
 plt.tight_layout(rect=[0, 0, 1, 1.05])
 plt.savefig('visualizations/fig3_phm_params.pdf')
 plt.show()

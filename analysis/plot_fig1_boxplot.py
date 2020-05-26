@@ -1,4 +1,4 @@
-""" Produces Figure 1, the boxplot representation of coverage accuracies
+""" Produces Figure 1, the boxplot representation of coverage accuracies.
 
 """
 

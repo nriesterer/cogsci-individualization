@@ -1,3 +1,7 @@
+""" Produces figure 2, the distribution of mReasoner parameters.
+
+"""
+
 import sys
 
 import pandas as pd
@@ -15,7 +19,6 @@ output_filename = sys.argv[1]
 
 # Load the output content
 mreasoner_data = []
-phm_data = []
 with open(output_filename) as out_file:
     modelname = None
     mreas_params = None
@@ -24,16 +27,14 @@ with open(output_filename) as out_file:
 
         # Identify current model
         if line.startswith('Evaluating '):
-            print(line)
             if 'ccobra_mreasoner.py' in line:
                 modelname = 'mReasoner'
             elif 'phm' in line:
                 modelname = 'PHM'
             continue
 
-        # Fit PHM output
+        # Accommodate for PHM output (which is discarded later on)
         line = line.replace('p_entailm', '\'p_entailm\'').replace('direction', '\'direction\'').replace('max_confi', '\'max_confi\'')
-
         line = line.split()
 
         if line[0] == 'Fit':
@@ -55,18 +56,6 @@ with open(output_filename) as out_file:
                     'omega': content['params']['omega'],
                     'sigma': content['params']['sigma']
                 })
-            elif modelname == 'PHM':
-                content['params']['max_confi'] = dict(content['params']['max_confi'])
-
-                phm_data.append({
-                    'id': content['id'],
-                    'model': modelname,
-                    'p_ent': content['params']['p_entailm'],
-                    'conf_A': content['params']['max_confi']['A'],
-                    'conf_I': content['params']['max_confi']['I'],
-                    'conf_E': content['params']['max_confi']['E'],
-                    'conf_O': content['params']['max_confi']['O']
-                })
         elif line[0].startswith('[('):
             assert len(line) == 1 and modelname == 'mReasoner'
             content = dict(eval(line[0]))
@@ -86,30 +75,28 @@ with open(output_filename) as out_file:
                 'sigma': content['sigma']
             })
 
-phm_df = pd.DataFrame(phm_data)
+# Create dataframe from mReasoner data
 mreasoner_df = pd.DataFrame(mreasoner_data)[[
     'id', 'model', 'score', 'epsilon', 'lambda', 'omega', 'sigma']]
 
 # Initialize plotting
 sns.set(style='whitegrid', palette='colorblind')
-
-# Plot mreasoner parameter distribution
 fig, axs = plt.subplots(2, 2, figsize=(9, 4.5))
 
+# Bin definition
 bins01 = np.arange(0, 1.2, 0.1) - 0.05
 space08 = (8 - 0.1) / 11
 bins08 = np.array(list(np.linspace(0.1, 8, 11)) + [8 + space08]) - (0.5 * space08)
 
-#sns.distplot(mreasoner_df['epsilon'], bins=bins01, kde=False, color='C0', ax=axs[0,0])
+# Plot epsilon
 sns.distplot(mreasoner_df['epsilon'], hist=True, bins=bins01, color='C0', ax=axs[0,0])
 axs[0,0].set_title(r'Parameter $\epsilon$')
 axs[0,0].set_xlabel('')
 axs[0,0].set_ylabel('Density')
 axs[0,0].set_xticks(np.linspace(0, 1, 11))
 axs[0,0].set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, 1, 11)], rotation=90)
-# axs[0,0].set_xlim(0, 1)
 
-#sns.distplot(mreasoner_df['lambda'], bins=bins08, kde=False, color='C1', ax=axs[0,1])
+# Plot lambda
 sns.distplot(mreasoner_df['lambda'], hist=True, bins=bins08, color='C1', ax=axs[0,1])
 axs[0,1].set_title(r'Parameter $\lambda$')
 axs[0,1].set_xlabel('')
@@ -117,7 +104,7 @@ axs[0,1].set_ylabel('')
 axs[0,1].set_xticks(np.linspace(0.1, 8, 11))
 axs[0,1].set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0.1, 8, 11)], rotation=90)
 
-#sns.distplot(mreasoner_df['omega'], bins=bins01, kde=False, color='C2', ax=axs[1,0])
+# Plot omega
 sns.distplot(mreasoner_df['omega'], hist=True, bins=bins01, color='C2', ax=axs[1,0])
 axs[1,0].set_title(r'Parameter $\omega$')
 axs[1,0].set_xlabel('')
@@ -125,7 +112,7 @@ axs[1,0].set_ylabel('Density')
 axs[1,0].set_xticks(np.linspace(0, 1, 11))
 axs[1,0].set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, 1, 11)], rotation=90)
 
-#sns.distplot(mreasoner_df['sigma'], bins=bins01, kde=False, color='C3', ax=axs[1,1])
+# Plot sigma
 sns.distplot(mreasoner_df['sigma'], hist=True, bins=bins01, color='C3', ax=axs[1,1])
 axs[1,1].set_title(r'Parameter $\sigma$')
 axs[1,1].set_xlabel('')
@@ -133,6 +120,7 @@ axs[1,1].set_ylabel('')
 axs[1,1].set_xticks(np.linspace(0, 1, 11))
 axs[1,1].set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, 1, 11)], rotation=90)
 
+# Save and display plot
 plt.tight_layout()
 plt.savefig('visualizations/fig2_mReasoner_params.pdf')
 plt.show()

@@ -1,3 +1,7 @@
+""" Produces figure 4, the congruency between mReasoner and PHM.
+
+"""
+
 import sys
 
 import pandas as pd
@@ -42,8 +46,11 @@ for idx in range(4):
 
 match_df = pd.DataFrame(match_data)
 
+# Prepare for plotting
 sns.set(style='whitegrid', palette='colorblind')
 plt.figure(figsize=(7, 3.5))
+
+# Plot the data
 sns.barplot(x='quartile', y='pc_matches', data=match_df, color='C0')
 
 # Plot text labels
@@ -53,10 +60,12 @@ for _, series in match_df.iterrows():
     pc = series['pc_matches']
     plt.text(quart_idx, pc + offset, '{:.1f}'.format(np.round(pc, 1)), color='white', ha='center', va='top', fontsize=11)
 
+# Axes definition
 plt.yticks(np.arange(0, 101, 10))
 plt.ylabel('Percentage of Congruency')
 plt.xlabel('Model Performance Quartile')
 
+# Save and display the plot
 plt.tight_layout()
 plt.savefig('visualizations/fig4_congruency.pdf')
 plt.show()
