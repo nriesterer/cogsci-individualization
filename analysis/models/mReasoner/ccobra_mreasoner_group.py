@@ -143,6 +143,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
                     for p_omega in np.linspace(*thread_mreasoner.param_bounds[2], fit_its):
                         for p_sigma in np.linspace(*thread_mreasoner.param_bounds[3], fit_its):
                             params = [p_epsilon, p_lambda, p_omega, p_sigma]
+                            thread_mreasoner.set_param_vec(params)
 
                             preds = {}
                             for syllog in ccobra.syllogistic.SYLLOGISMS:
