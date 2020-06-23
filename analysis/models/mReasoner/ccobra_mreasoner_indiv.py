@@ -79,7 +79,7 @@ class CCobraMReasoner(ccobra.CCobraModel):
 
         return new
 
-    def end_participant(self, subj_id, **kwargs):
+    def end_participant(self, subj_id, model_log, **kwargs):
         """ When the prediction phase is finished, terminate the LISP subprocess.
 
         """

@@ -30,7 +30,7 @@ class PHMModel(ccobra.CCobraModel):
     def start_participant(self, **kwargs):
         self.start_time = time.time()
 
-    def end_participant(self, subj_id, **kwargs):
+    def end_participant(self, subj_id, model_log, **kwargs):
         # Parameterization output
         print('Fit ({:.2f}s) id={} params=[(p_entailm,{}),(direction,{}),(max_confi,{})]'.format(
             time.time() - self.start_time,
