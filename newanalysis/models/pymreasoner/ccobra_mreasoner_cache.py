@@ -15,7 +15,7 @@ import numpy as np
 import mreasoner
 import create_cache
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class CCobraMReasoner(ccobra.CCobraModel):
     """ mReasoner CCOBRA model implementation.
@@ -52,10 +52,6 @@ class CCobraMReasoner(ccobra.CCobraModel):
         self.n_samples = n_samples
         self.fit_its = fit_its
 
-        # Prepare mReasoner parameters
-        self.params = copy.deepcopy(mreasoner.DEFAULT_PARAMS)
-        self.best_param_dicts = []
-
         # Initialize auxiliary variables
         self.n_pre_train_dudes = 0
         self.pre_train_data = np.zeros((64, 9))
@@ -66,11 +62,29 @@ class CCobraMReasoner(ccobra.CCobraModel):
         if cache_file:
             self.prediction_cache = np.load(cache_file)
             if self.prediction_cache.shape[0] != fit_its:
-                print('WARNING: fit_its mismatch between model and cache.')
+                logger.warning('WARNING: fit_its mismatch between model and cache.')
             self.fit_its = self.prediction_cache.shape[0]
         else:
             self.prediction_cache = create_cache.generate_cache(self.fit_its, self.n_samples)
 
+        # Prepare mReasoner parameters
+        self.params = {}
+
+        for param_idx, param in enumerate(['epsilon', 'lambda', 'omega', 'sigma']):
+            default_value = mreasoner.DEFAULT_PARAMS[param]
+
+            conf_values = np.linspace(*mreasoner.PARAM_BOUNDS[param_idx], self.fit_its)
+            diffs = np.abs(conf_values - default_value)
+            closest_idxs = np.arange(len(conf_values))[diffs == diffs.min()]
+            closest_idx = np.random.choice(closest_idxs)
+
+            self.params[param] = (closest_idx, conf_values[closest_idx])
+            logger.debug('Default {}: def={} confs={} res={}'.format(
+                param, default_value, conf_values, self.params[param]))
+
+        self.best_param_dicts = []
+
+        # Prepare debugging variables
         self.start_time = None
 
     def end_participant(self, subj_id, model_log, **kwargs):
@@ -107,6 +121,10 @@ class CCobraMReasoner(ccobra.CCobraModel):
             Training data.
 
         """
+
+        # Check if fitting is deactivated
+        if self.fit_its == 0 or self.evaluation_type == 'coverage':
+            return
 
         # Extract the training data to fit mReasoner with
         self.n_pre_train_dudes = len(dataset)
