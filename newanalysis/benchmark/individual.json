@@ -1,0 +1,11 @@
+{
+    "type": "coverage",
+    "data.test": "../data/Ragni2016.csv",
+    "models": [
+        {"filename": "../models/phm/ccobra_phm_indiv.py", "override_name": "PHM-Indiv"},
+        {"filename": "../models/pymreasoner/ccobra_mreasoner_cache.py", "override_name": "mReasoner-Indiv", "args": {"cache_file": "caches/2020-09-09-cache-11-10.npy"}}
+    ],
+    "domain_encoders": {
+        "syllogistic": "%ccobra%/syllogistic/encoder_syl.py"
+    }
+}

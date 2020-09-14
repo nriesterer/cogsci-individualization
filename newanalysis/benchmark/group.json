@@ -1,0 +1,14 @@
+{
+    "type": "prediction",
+    "data.test": "../data/Ragni2016.csv",
+    "data.pre_train": "../data/Ragni2016.csv",
+    "corresponding_data": false,
+    "models": [
+        {"filename": "../models/pymreasoner/ccobra_mreasoner_cache.py", "override_name": "mReasoner-Group", "args": {"cache_file": "caches/2020-09-09-cache-11-10.npy"}},
+        {"filename": "../models/phm/ccobra_phm_group.py", "override_name": "PHM-Group"},
+        {"filename": "../models/mfa", "override_name": "MFA"}
+    ],
+    "domain_encoders": {
+        "syllogistic": "%ccobra%/syllogistic/encoder_syl.py"
+    }
+}

@@ -1,6 +1,8 @@
 CogSci Individualization
 ========================
 
+**Update:** The analysis has been reconducted using the updated version of mReasoner from [https://github.com/nriesterer/pymreasoner](https://github.com/nriesterer/pymreasoner). See the new visualizations in `newanalysis/visualizations`.
+
 Companion repository for the 2020 article "Do Models Capture Individuals? Evaluating Parameterized Models for Syllogistic Reasoning" published in the proceedings of the 42nd Annual Meeting of the Cognitive Science Society.
 
 ### Overview
@@ -23,6 +25,7 @@ Companion repository for the 2020 article "Do Models Capture Individuals? Evalua
 - `analysis/plot_fig2_mReasoner_params.py`: Generates figure 2, a distribution overview for the resulting mReasoner parameters.
 - `analysis/plot_fig3_phm_params.py`: Generates figure 3, a distribution overview for the resulting PHM parameters.
 - `analysis/plot_fig4_congruency.py`: Generates figure 4, an overview about the overlap/congruency between mReasoner and PHM.
+- `newanalysis/`: Reconducted analyses using the new version of mReasoner.
 
 ### Dependencies
 
